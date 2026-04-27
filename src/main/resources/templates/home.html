@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Sistema de Parqueadero</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-5">
+
+    <div class="d-flex justify-content-between align-items-center">
+        <h1>Gestión de Parqueadero</h1>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="btn btn-danger">Cerrar Sesión</button>
+        </form>
+    </div>
+
+    <hr>
+
+    <div sec:authorize="hasRole('ADMINISTRADOR')" class="card p-4 mb-4 shadow-sm">
+        <h3>Registrar Entrada de Vehículo</h3>
+        <form th:action="@{/admin/registrar}" method="post" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Placa (Máx 6)</label>
+                <input type="text" name="placa" class="form-control" maxlength="6" required> </div>
+            <div class="col-md-2">
+                <label class="form-label">Hora Entrada</label>
+                <input type="number" name="horaEntrada" class="form-control" required> </div>
+            <div class="col-md-3">
+                <label class="form-label">Ubicación</label>
+                <input type="text" name="ubicacion" class="form-control" placeholder="Ej: A-2" required> </div>
+            <div class="col-md-4">
+                <label class="form-label">Tipo de Vehículo</label>
+                <select name="tipo.id" class="form-select"> <option th:each="t : ${tipos}" th:value="${t.id}" th:text="${t.nombre}"></option>
+                </select>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-success">Guardar Registro</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="mt-4">
+        <h3>Vehículos en el Parqueadero</h3>
+        <table class="table table-hover table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Placa</th>
+                    <th>Tipo</th>
+                    <th>Hora Entrada</th>
+                    <th>Ubicación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="v : ${vehiculos}">
+                    <td th:text="${v.placa}"></td>
+                    <td th:text="${v.tipo.nombre}"></td>
+                    <td th:text="${v.horaEntrada}"></td>
+                    <td th:text="${v.ubicacion}"></td>
+                    <td>
+                        <div sec:authorize="hasAnyRole('ADMINISTRADOR', 'ACOMODADOR')">
+                            <form th:action="@{/acomodador/actualizar}" method="post" class="d-inline">
+                                <input type="hidden" name="id" th:value="${v.id}">
+                                <input type="text" name="ubicacion" class="form-control-sm" placeholder="Nueva ubicación">
+                                <button type="submit" class="btn btn-sm btn-warning">Actualizar</button>
+                            </form>
+                        </div>
+                        <span sec:authorize="hasRole('CLIENTE')" class="text-muted">Solo lectura</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>

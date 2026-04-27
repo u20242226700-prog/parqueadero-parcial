@@ -1,11 +1,11 @@
 package edu.usco.parqueadero.controller;
 
-import edu.usco.parqueadero.repository.VehiculoRepository;
-import edu.usco.parqueadero.repository.TipoVehiculoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import edu.usco.parqueadero.repository.VehiculoRepository;
+import edu.usco.parqueadero.repository.TipoVehiculoRepository;
 
 @Controller
 public class ViewController {
@@ -23,9 +23,8 @@ public class ViewController {
 
     @GetMapping({"/", "/home"})
     public String home(Model model) {
-        // Traemos todos los vehículos para la tabla
+        // Traemos datos solo si los repositorios no son nulos
         model.addAttribute("vehiculos", vehiculoRepo.findAll());
-        // Traemos todos los tipos para el selector del formulario
         model.addAttribute("tipos", tipoRepo.findAll());
         return "home";
     }

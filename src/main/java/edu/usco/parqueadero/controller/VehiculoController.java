@@ -1,34 +1,30 @@
 package edu.usco.parqueadero.controller;
 
-import edu.usco.parqueadero.model.Vehiculo;
-import edu.usco.parqueadero.repository.VehiculoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import edu.usco.parqueadero.entity.Vehiculo;
+import edu.usco.parqueadero.repository.VehiculoRepository;
 
-@Controller
+@RestController
+@RequestMapping("/api/vehiculos")
 public class VehiculoController {
 
     @Autowired
     private VehiculoRepository repository;
 
-    // Acción para el ADMINISTRADOR
     @PostMapping("/admin/registrar")
-    public String registrar(Vehiculo vehiculo) {
-        // Validación de placa manual por si acaso
-        if (vehiculo.getPlaca() != null && vehiculo.getPlaca().length() <= 6) {
+    public String registrar(@RequestBody Vehiculo vehiculo) {
+        if (vehiculo.getPlaca() != null) {
             repository.save(vehiculo);
         }
-        return "redirect:/home";
+        return "Vehículo registrado correctamente";
     }
 
-    // Acción para el ACOMODADOR
     @PostMapping("/acomodador/actualizar")
     public String actualizarUbicacion(@RequestParam Long id, @RequestParam String ubicacion) {
         Vehiculo v = repository.findById(id).orElseThrow();
         v.setUbicacion(ubicacion);
         repository.save(v);
-        return "redirect:/home";
+        return "Ubicación actualizada";
     }
 }

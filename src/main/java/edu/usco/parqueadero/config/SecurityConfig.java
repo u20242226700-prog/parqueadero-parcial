@@ -15,7 +15,7 @@ public class SecurityConfig {
 
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
-        // Configuración de los 3 usuarios requeridos
+        // Usuarios con nombres claros
         UserDetails admin = User.withDefaultPasswordEncoder()
                 .username("admin")
                 .password("123")
@@ -23,13 +23,13 @@ public class SecurityConfig {
                 .build();
 
         UserDetails aco = User.withDefaultPasswordEncoder()
-                .username("aco")
+                .username("acomoda")
                 .password("123")
                 .roles("ACOMODADOR")
                 .build();
 
         UserDetails cli = User.withDefaultPasswordEncoder()
-                .username("cli")
+                .username("cliente")
                 .password("123")
                 .roles("CLIENTE")
                 .build();
@@ -41,13 +41,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                // Permitir acceso a login y consola de base de datos
                 .requestMatchers("/login", "/h2-console/**").permitAll()
-                // El Administrador es el único que registra (POST /admin/**)
                 .requestMatchers("/admin/**").hasRole("ADMINISTRADOR")
-                // Acomodador y Admin pueden actualizar ubicaciones
                 .requestMatchers("/acomodador/**").hasAnyRole("ADMINISTRADOR", "ACOMODADOR")
-                // Cualquier otra ruta requiere estar autenticado
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -56,9 +52,7 @@ public class SecurityConfig {
                 .permitAll()
             )
             .logout(logout -> logout.permitAll())
-            // Página personalizada para cuando un usuario no tiene permiso (ej. Cliente intentando registrar)
             .exceptionHandling(ex -> ex.accessDeniedPage("/403"))
-            // Deshabilitar CSRF y FrameOptions para que funcione la consola H2 y los formularios simples
             .csrf(csrf -> csrf.disable())
             .headers(headers -> headers.frameOptions(frame -> frame.disable()));
             

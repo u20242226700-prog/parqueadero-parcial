@@ -23,7 +23,9 @@ public class ViewController {
 
     @GetMapping({"/", "/home"})
     public String home(Model model) {
+        // Traemos todos los vehículos para la tabla
         model.addAttribute("vehiculos", vehiculoRepo.findAll());
+        // Traemos todos los tipos para el selector del formulario
         model.addAttribute("tipos", tipoRepo.findAll());
         return "home";
     }
@@ -32,4 +34,4 @@ public class ViewController {
     public String accessDenied() {
         return "403";
     }
-} 
+}

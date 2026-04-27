@@ -21,19 +21,30 @@
         <form th:action="@{/admin/registrar}" method="post" class="row g-3">
             <div class="col-md-3">
                 <label class="form-label">Placa (Máx 6)</label>
-                <input type="text" name="placa" class="form-control" maxlength="6" required> </div>
-            <div class="col-md-2">
-                <label class="form-label">Hora Entrada</label>
-                <input type="number" name="horaEntrada" class="form-control" required> </div>
+                <input type="text" name="placa" class="form-control" maxlength="6" placeholder="ABC123" required>
+            </div>
+            
             <div class="col-md-3">
+                <label class="form-label">Hora Entrada</label>
+                <input type="time" name="horaEntrada" class="form-control" required>
+            </div>
+            
+            <div class="col-md-2">
                 <label class="form-label">Ubicación</label>
-                <input type="text" name="ubicacion" class="form-control" placeholder="Ej: A-2" required> </div>
+                <input type="text" name="ubicacion" class="form-control" placeholder="A-1" required>
+            </div>
+            
             <div class="col-md-4">
                 <label class="form-label">Tipo de Vehículo</label>
-                <select name="tipo.id" class="form-select"> <option th:each="t : ${tipos}" th:value="${t.id}" th:text="${t.nombre}"></option>
+                <select name="tipo.id" class="form-select" required>
+                    <option value="" disabled selected>Seleccione un tipo...</option>
+                    <option th:each="t : ${tipos}" 
+                            th:value="${t.id}" 
+                            th:text="${t.nombre}"></option>
                 </select>
             </div>
-            <div class="col-12">
+            
+            <div class="col-12 text-end">
                 <button type="submit" class="btn btn-success">Guardar Registro</button>
             </div>
         </form>
@@ -41,7 +52,7 @@
 
     <div class="mt-4">
         <h3>Vehículos en el Parqueadero</h3>
-        <table class="table table-hover table-bordered">
+        <table class="table table-hover table-bordered align-middle">
             <thead class="table-dark">
                 <tr>
                     <th>Placa</th>
@@ -53,24 +64,23 @@
             </thead>
             <tbody>
                 <tr th:each="v : ${vehiculos}">
-                    <td th:text="${v.placa}"></td>
-                    <td th:text="${v.tipo.nombre}"></td>
+                    <td th:text="${v.placa}" class="fw-bold"></td>
+                    <td th:text="${v.tipo != null ? v.tipo.nombre : 'N/A'}"></td>
                     <td th:text="${v.horaEntrada}"></td>
                     <td th:text="${v.ubicacion}"></td>
                     <td>
                         <div sec:authorize="hasAnyRole('ADMINISTRADOR', 'ACOMODADOR')">
-                            <form th:action="@{/acomodador/actualizar}" method="post" class="d-inline">
+                            <form th:action="@{/acomodador/actualizar}" method="post" class="d-flex gap-2">
                                 <input type="hidden" name="id" th:value="${v.id}">
-                                <input type="text" name="ubicacion" class="form-control-sm" placeholder="Nueva ubicación">
-                                <button type="submit" class="btn btn-sm btn-warning">Actualizar</button>
+                                <input type="text" name="ubicacion" class="form-control form-control-sm" placeholder="Nueva" required>
+                                <button type="submit" class="btn btn-sm btn-warning">Mover</button>
                             </form>
                         </div>
-                        <span sec:authorize="hasRole('CLIENTE')" class="text-muted">Solo lectura</span>
+                        <span sec:authorize="hasRole('CLIENTE')" class="badge bg-secondary">Lectura</span>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
-
 </body>
 </html>
